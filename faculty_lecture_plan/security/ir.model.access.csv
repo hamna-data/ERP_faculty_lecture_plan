@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_faculty_subject,access.faculty.subject,model_faculty_subject,,1,1,1,1
+access_faculty_subject_topic,access.faculty.subject.topic,model_faculty_subject_topic,,1,1,1,1
+access_faculty_holiday,access.faculty.holiday,model_faculty_holiday,,1,1,1,1
+access_faculty_lecture_plan,access_faculty_lecture_plan,model_faculty_lecture_plan,,1,1,1,1

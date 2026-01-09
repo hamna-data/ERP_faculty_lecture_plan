@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_faculty_holiday_list" model="ir.ui.view">
+        <field name="name">faculty.holiday.list</field>
+        <field name="model">faculty.holiday</field>
+        <field name="arch" type="xml">
+            <list string="Holidays" default_order="date desc">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="year"/>
+                <field name="description"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_faculty_holiday_form" model="ir.ui.view">
+        <field name="name">faculty.holiday.form</field>
+        <field name="model">faculty.holiday</field>
+        <field name="arch" type="xml">
+            <form string="Holiday">
+                <header>
+                    <button name="toggle_active" string="Archive" type="object" 
+                            class="btn-secondary" invisible="not active"/>
+                    <button name="toggle_active" string="Unarchive" type="object" 
+                            class="btn-primary" invisible="active"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="year" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Enter holiday description..."/>
+                    </group>
+                    <group>
+                        <field name="remarks" placeholder="Enter any additional remarks..."/>
+                    </group>
+                </sheet>
+                <chatter>
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </chatter>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_faculty_holiday_search" model="ir.ui.view">
+        <field name="name">faculty.holiday.search</field>
+        <field name="model">faculty.holiday</field>
+        <field name="arch" type="xml">
+            <search string="Search Holidays">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="year"/>
+                <field name="description"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="This Year" name="this_year" domain="[('year', '=', context_today().year)]"/>
+                <filter string="Next Year" name="next_year" domain="[('year', '=', context_today().year + 1)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Year" name="group_year" context="{'group_by': 'year'}"/>
+                    <filter string="Month" name="group_month" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_faculty_holiday" model="ir.actions.act_window">
+        <field name="name">Holidays</field>
+        <field name="res_model">faculty.holiday</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_faculty_holiday_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+</odoo>

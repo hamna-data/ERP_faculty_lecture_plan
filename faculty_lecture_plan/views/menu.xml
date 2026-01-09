@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_faculty_root"
+              name="Faculty"/>
+
+    <!-- Subjects Menu -->
+    <menuitem id="menu_faculty_subject"
+              name="Subjects"
+              parent="menu_faculty_root"
+              action="action_faculty_subject"
+              sequence="10"/>
+
+    <!-- Topics Menu -->
+    <menuitem id="menu_faculty_topic"
+              name="Topics"
+              parent="menu_faculty_root"
+              action="action_faculty_topic"
+              sequence="20"/>
+
+    <!-- Holidays Menu -->
+    <menuitem id="menu_faculty_holiday"
+              name="Holidays"
+              parent="menu_faculty_root"
+              action="action_faculty_holiday"
+              sequence="30"/>
+
+    <!-- Lecture Plans Menu -->
+    <menuitem id="menu_faculty_lecture_plan"
+              name="Lecture Plans"
+              parent="menu_faculty_root"
+              action="action_faculty_lecture_plan"
+              sequence="40"/>
+
+</odoo>

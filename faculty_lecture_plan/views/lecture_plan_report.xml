@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    
+
+    <!-- Report Action -->
+    <record id="action_report_lecture_plan" model="ir.actions.report">
+        <field name="name">Lecture Plan Schedule</field>
+        <field name="model">faculty.lecture.plan</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">faculty_lecture_plan.report_lecture_plan_template</field>
+        <field name="report_file">faculty_lecture_plan.report_lecture_plan_template</field>
+        <field name="binding_model_id" ref="model_faculty_lecture_plan"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_lecture_plan_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-set="schedule_lines" t-value="doc.schedule_lines and doc.schedule_lines.split('\n') or []"/>
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h2 class="text-center">
+                                    <strong>Lecture Plan Schedule</strong>
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- Plan Details -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <div style="font-size: 13px;">
+                                    <strong>Lecture Plan:</strong> <span t-field="doc.name"/>
+                                    &#160;&#160;|&#160;&#160;
+                                    <strong>Subject:</strong> <span t-field="doc.subject_id.name"/>
+                                    <t t-if="doc.subject_id.code"> (<span t-field="doc.subject_id.code"/>)</t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <!-- Lecture Schedule -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 style="margin-bottom: 6px;">
+                                    <strong>Lecture Schedule</strong>
+                                </h4>
+                                <t t-if="schedule_lines">
+                                    <table class="table table-bordered table-sm" style="font-size: 12px;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="text-center" style="width: 20%;">Date</th>
+                                                <th class="text-center" style="width: 10%;">Day</th>
+                                                <th class="text-center" style="width: 70%;">Topics (30 minutes each)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="topic_counter" t-value="1"/>
+                                            <t t-foreach="schedule_lines" t-as="schedule_line">
+                                                <t t-if="schedule_line and schedule_line.strip() and not schedule_line.startswith('EXCLUDED HOLIDAYS')">
+                                                    <t t-set="parts" t-value="schedule_line.split(': ')"/>
+                                                    <t t-if="len(parts) == 2">
+                                                        <t t-set="day_date_part" t-value="parts[0]"/>
+                                                        <t t-set="topics_part" t-value="parts[1]"/>
+                                                        <t t-set="day_match" t-value="day_date_part.split(' (')"/>
+                                                        <t t-set="day_info" t-value="day_match[0]"/>
+                                                        <t t-set="date_info" t-value="day_match[1].rstrip(')')"/>
+                                                        <t t-set="date_parts" t-value="date_info.split(' - ')"/>
+                                                        <t t-set="actual_date" t-value="date_parts[0]"/>
+                                                        <t t-set="day_name" t-value="date_parts[1]"/>
+                                                        <t t-set="topic_list" t-value="topics_part.split(', ')"/>
+                                                        <tr>
+                                                            <td class="text-center align-middle">
+                                                                <strong><span t-esc="actual_date"/></strong>
+                                                                <br/>
+                                                                <small><span t-esc="day_name"/></small>
+                                                            </td>
+                                                            <td class="text-center align-middle">
+                                                                <strong><span t-esc="day_info"/></strong>
+                                                            </td>
+                                                            <td>
+                                                                <table class="table table-sm mb-0" style="border: none;">
+                                                                    <t t-foreach="topic_list" t-as="topic_name">
+                                                                        <tr style="border: none;">
+                                                                            <td style="border: none; padding: 2px 8px;">
+                                                                                <strong><span t-esc="topic_counter"/>.</strong>
+                                                                                <span t-esc="topic_name.strip()"/>
+                                                                                <span class="text-muted">(30 min)</span>
+                                                                                <t t-set="topic_counter" t-value="topic_counter + 1"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </t>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-warning">
+                                        <strong>No schedule available.</strong>
+                                        Please ensure you have selected a subject with topics and set the date range.
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 style="margin-bottom: 6px;"><strong>Summary</strong></h5>
+                                <table class="table table-sm" style="width: 50%; font-size: 12px;">
+                                    <tr>
+                                        <td><strong>Total Topics:</strong></td>
+                                        <td><span t-esc="len(doc.topic_ids)"/> topics</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Topics per Day:</strong></td>
+                                        <td><span t-esc="doc.topics_per_day"/> topics</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Duration per Day:</strong></td>
+                                        <td><span t-esc="doc.topics_per_day * 30"/> minutes (<span t-esc="doc.hours_per_day"/> hours)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Estimated Days Required:</strong></td>
+                                        <td><span t-esc="(len(doc.topic_ids) + doc.topics_per_day - 1) // doc.topics_per_day"/> days</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
